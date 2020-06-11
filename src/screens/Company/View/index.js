@@ -9,6 +9,8 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import InputBox from '../../../components/InputBox';
+import {Picker} from '@react-native-community/picker';
+import countriesData from '../../../testData/countries.json';
 
 const {height, width} = Dimensions.get('window');
 
@@ -32,6 +34,23 @@ const CompanyView = ({
     country = '',
     showError = {},
   } = parentState || {};
+
+  const renderCountriesList = () => {
+    const {countries = []} = countriesData;
+    return (
+      Array.isArray(countries) &&
+      countries.length &&
+      countries.map(country => {
+        return (
+          <Picker.Item
+            value={country.code3}
+            label={country.name}
+            key={country.code3}
+          />
+        );
+      })
+    );
+  };
   return (
     <>
       <ScrollView
@@ -98,7 +117,13 @@ const CompanyView = ({
             onChange={text => setFormValues(text, 'email')}
             value={email}
             error={showError.email}
-            errorMessage={email ? "Enter a valid email" : showError.email ? 'Email is required' : ''}
+            errorMessage={
+              email
+                ? 'Enter a valid email'
+                : showError.email
+                ? 'Email is required'
+                : ''
+            }
           />
         </View>
 
@@ -112,7 +137,13 @@ const CompanyView = ({
             onChange={text => setFormValues(text, 'phone')}
             value={phone}
             error={showError.phone}
-            errorMessage={phone ? "Enter a valid phone number" : showError.phone ? 'Phone is required' : ''}
+            errorMessage={
+              phone
+                ? 'Enter a valid phone number'
+                : showError.phone
+                ? 'Phone is required'
+                : ''
+            }
           />
         </View>
 
@@ -187,27 +218,25 @@ const CompanyView = ({
         </View>
 
         <View style={styles.inputContainer}>
-          <InputBox
-            placeholder={'Start typing here'}
-            labelText={'Country'}
-            required
-            onChange={text => setFormValues(text, 'country')}
-            value={country}
-            error={showError.country}
-            errorMessage={showError.country ? 'Country is required' : ''}
-          />
+          <Text style={{fontWeight: 'bold'}}>
+            Country <Text style={{color: 'red'}}>*</Text>
+          </Text>
+          <Picker
+            selectedValue={country}
+            style={styles.picker}
+            onValueChange={itemValue => setFormValues(itemValue, 'country')}>
+            {renderCountriesList()}
+          </Picker>
+          {showError.country && (
+            <Text style={{color: 'red'}}>Country is required</Text>
+          )}
         </View>
       </ScrollView>
       <View style={styles.submitContainer}>
-        {/* <Button
-          height={56}
-          borderRadius={28}
-          title="Submit"
-          style={styles.button}
-          onPress={onSubmit}
-        /> */}
         <TouchableOpacity onPress={onSubmit} style={styles.button}>
-          <Text style={{ color: "#fff", fontSize: 16, fontWeight: "bold" }}>Submit</Text>
+          <Text style={{color: '#fff', fontSize: 16, fontWeight: 'bold'}}>
+            Submit
+          </Text>
         </TouchableOpacity>
       </View>
     </>
@@ -246,8 +275,15 @@ const styles = StyleSheet.create({
     height: 56,
     borderRadius: 28,
     backgroundColor: '#E40046',
-    justifyContent: "center",
-    alignItems: "center"
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  picker: {
+    height: 50,
+    width: width * 0.95,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
   },
 });
 

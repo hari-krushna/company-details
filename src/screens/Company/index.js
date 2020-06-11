@@ -3,6 +3,7 @@ import {Keyboard} from 'react-native';
 import {connect} from "react-redux"
 import { actions as companyActions } from "../../reducers/companyReducer";
 import CompanyView from './View';
+import countriesData from '../../testData/countries.json';
 
 const validationJson = {
   first_name: {
@@ -104,8 +105,19 @@ class CompanyScreen extends Component {
     if (!key) return;
     if (parseNum) parseInt(value);
     if (key === 'phone' && !this.checkPhoneNumLength(value)) return;
+    // if(key === 'country') {
+    //   const countryName = this.countryName(value);
+    //   this.setState({[key]: countryName, showError: {}});
+    //   return;
+    // }
     this.setState({[key]: value, showError: {}});
   };
+
+  countryName = (key = "") => {
+    const { countries = [] } = countriesData;
+    const selectedCountry  =Array.isArray(countries) && countries.length && countries.find(c => c.code3 === key)
+    return selectedCountry && selectedCountry.name
+  }
 
   formValidator = () => {
     let isValid = true;
@@ -177,6 +189,7 @@ class CompanyScreen extends Component {
       this.setState({ showError: values.errorObj || {} });
     } else {
       const { allValues = {} } = values || {};
+      allValues.country = this.countryName(allValues.country);
       this.props.dispatch(companyActions.setCompanyDetails(allValues));
       this.navigateTo("Success", {});
       this.resetState();
