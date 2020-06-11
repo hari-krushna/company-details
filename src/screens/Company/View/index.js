@@ -213,7 +213,13 @@ const CompanyView = ({
             onChange={text => setFormValues(text, 'pincode')}
             value={pincode}
             error={showError.pincode}
-            errorMessage={showError.pincode ? 'Pincode is required' : ''}
+            errorMessage={
+              pincode
+                ? 'Enter a valid pincode'
+                : showError.pincode
+                ? 'Pincode is required'
+                : ''
+            }
           />
         </View>
 
